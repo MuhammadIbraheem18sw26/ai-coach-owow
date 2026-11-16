@@ -371,7 +371,7 @@ export default function App() {
           <form onSubmit={handleSubmit} className="form">
             <div className="row">
               <label>
-                Server Session Fixture (`trustedSessionId`) — Locked
+                Server Session(`trustedSessionId`)
                 <input
                   value={trustedSessionId}
                   readOnly
@@ -385,6 +385,7 @@ export default function App() {
                 <input
                   type="number"
                   value={week}
+                  className="input-locked"
                   onChange={(e) => setWeek(Number(e.target.value))}
                 />
               </label>
@@ -464,7 +465,7 @@ export default function App() {
           {!result && (
             <p className="muted">
               Submit the exercise to inspect deterministic context selection and verify that{' '}
-              <code>private_chats</code> and other members&apos; records never enter the model input.
+              <code>private chats</code> and other members&apos; records never enter the model input.
             </p>
           )}
 
@@ -472,14 +473,7 @@ export default function App() {
             <div className="trace-content">
               <p>
                 <strong>Resolved Member:</strong> <code>{result.trace.resolvedMemberId}</code> (via{' '}
-                <code>{result.trace.trustedSessionId}</code>) | <strong>Adapter:</strong>{' '}
-                <code>{result.trace.adapterUsed}</code> | <strong>Store:</strong>{' '}
-                <code>{result.trace.storageBackend}</code> | <strong>Langfuse:</strong>{' '}
-                <code>
-                  {result.trace.langfuseEnabled
-                    ? `Active (${result.trace.langfuseTraceId || 'traced'})`
-                    : 'Standby (set LANGFUSE_PUBLIC_KEY)'}
-                </code>
+                <code>{result.trace.trustedSessionId}</code>)
               </p>
 
               <h4>1. Deterministic Record Filtering (Pre-LLM)</h4>

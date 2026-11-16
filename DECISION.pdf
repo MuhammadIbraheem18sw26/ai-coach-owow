@@ -1,0 +1,293 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Length 17434 >>
+stream
+BT /F2 15.0 Tf 0.060 0.090 0.160 rg 36.00 791.89 Td (Decision Document -- The Coach That Remembers) Tj ET
+0.60 w 0.060 0.090 0.160 rg 36.00 785.89 523.28 1.20 re f
+BT /F2 10.8 Tf 0.120 0.230 0.540 rg 36.00 761.89 Td (1. Member Problem & Chosen Outcome) Tj ET
+0.60 w 0.820 0.850 0.900 rg 36.00 758.89 523.28 0.50 re f
+BT /F1 8.8 Tf 0.070 0.090 0.150 rg 36.00 744.09 Td (Members in the leadership programme complete a weekly exercise and commit to a specific action, but AI feedback currently) Tj ET
+BT /F1 8.8 Tf 0.070 0.090 0.150 rg 36.00 732.47 Td (feels disconnected from their prior commitments. At the same time, members share sensitive disclosures in private_chat) Tj ET
+BT /F1 8.8 Tf 0.070 0.090 0.150 rg 36.00 720.86 Td (\(chat-101-1, chat-202-1\) and expect strict privacy.) Tj ET
+BT /F2 8.8 Tf 0.070 0.090 0.150 rg 36.00 706.24 Td (Chosen Outcome: Build a working end-to-end slice where submitting a weekly exercise produces concise, practical coaching) Tj ET
+BT /F2 8.8 Tf 0.070 0.090 0.150 rg 36.00 694.63 Td (feedback \(observation, reflectionQuestion, possibleNextCommitment\) grounded in the member's current active commitment and) Tj ET
+BT /F2 8.8 Tf 0.070 0.090 0.150 rg 36.00 683.01 Td (most recent exercise, while enforcing a hard deterministic privacy boundary prior to any model call, providing a) Tj ET
+BT /F2 8.8 Tf 0.070 0.090 0.150 rg 36.00 671.39 Td (confidential Private AI Coach Chat & pgvector Semantic Search space, and exposing an auditable Reviewer Trace.) Tj ET
+BT /F2 10.8 Tf 0.120 0.230 0.540 rg 36.00 651.58 Td (2. Questions Asked, Answers Received, & Remaining Assumptions) Tj ET
+0.60 w 0.820 0.850 0.900 rg 36.00 648.58 523.28 0.50 re f
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 36.00 625.18 146.52 17.40 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 40.50 631.08 Td (Clarifying Question Asked) Tj ET
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 182.52 625.18 177.92 17.40 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 187.02 631.08 Td (Answer / Guidance from Brief & Product) Tj ET
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 360.43 625.18 198.85 17.40 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 364.93 631.08 Td (Remaining Working Assumption) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 36.00 570.18 146.52 55.00 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 613.68 Td (1. Is visibility === 'exercise') Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 604.28 Td (a strict, non-overridable access) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 594.88 Td (boundary?) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 182.52 570.18 177.92 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 613.68 Td (Only exercise-visible records belonging to) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 604.28 Td (the trusted member may enter the exercise-) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 594.88 Td (feedback flow; private_chat and other) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 585.48 Td (members' records must be filtered before any) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 576.08 Td (model call.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 360.43 570.18 198.85 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 613.68 Td (Hard deny enforced in deterministic code) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 604.28 Td (\(context_selector.py\) before prompt construction.) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 594.88 Td (Private chats are isolated in their own) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 585.48 Td (table/vector scope for personal recall only.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 36.00 524.58 146.52 45.60 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 558.68 Td (2. How should superseded) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 549.28 Td (\(com-202-1\) and earlier) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 539.88 Td (completed \(com-101-0, com-202-0\)) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 530.48 Td (commitments be handled?) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 182.52 524.58 177.92 45.60 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 558.68 Td (A superseded commitment must not be) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 549.28 Td (presented as the current commitment; use) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 539.88 Td (earlier records only when they help with the) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 530.48 Td (current situation.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 360.43 524.58 198.85 45.60 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 558.68 Td (Omit superseded commitments from) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 549.28 Td (SanitizedModelInput completely so the LLM cannot) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 539.88 Td (anchor on outdated wording; omit older completed) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 530.48 Td (commitments when an active commitment exists.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 36.00 478.98 146.52 45.60 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 513.08 Td (3. What should the Reviewer) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 503.68 Td (Trace expose for excluded) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 494.28 Td (records?) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 182.52 478.98 177.92 45.60 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 513.08 Td (Show which records informed the response and) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 503.68 Td (why in a development trace or explanation) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 494.28 Td (visible to the reviewer.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 360.43 478.98 198.85 45.60 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 513.08 Td (Log recordId, recordType, week, decision, and) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 503.68 Td (policy reason only -- never raw excluded text,) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 494.28 Td (preventing private_chat leaks in UI traces or) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 484.88 Td (telemetry.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 36.00 433.38 146.52 45.60 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 467.48 Td (4. Does submitting an exercise) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 458.08 Td (automatically mutate the prior) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 448.68 Td (commitment?) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 182.52 433.38 177.92 45.60 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 467.48 Td (Do not claim that a member completed an) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 187.02 458.08 Td (action unless the data says so.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 360.43 433.38 198.85 45.60 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 467.48 Td (Submitting an exercise is side-effect free;) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 458.08 Td (adopting possibleNextCommitment is an explicit) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 448.68 Td (member action \(POST /api/commitments\) that marks) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 439.28 Td (the prior active commitment superseded.) Tj ET
+BT /F2 10.8 Tf 0.120 0.230 0.540 rg 36.00 413.38 Td (3. Architecture & End-to-End Data Flow) Tj ET
+0.60 w 0.820 0.850 0.900 rg 36.00 410.38 523.28 0.50 re f
+0.60 w 0.060 0.090 0.160 rg 0.200 0.250 0.330 RG 36.00 286.38 523.28 118.00 re B
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 394.38 Td (React + TypeScript UI \(:5173, apps/web\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 385.38 Td (  |  REST \(/api/scenarios, /api/member-workspace, /api/feedback, /api/commitments, /api/private-chat/*\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 376.38 Td (  v) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 367.38 Td (NestJS + TypeORM Backend \(:3000, apps/backend\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 358.38 Td (  +- 1. Session Trust Boundary: maps trustedSessionId -> resolvedMemberId via TypeORM TrustedSessionEntity) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 349.38 Td (  +- 2. Relational Persistence \(TypeORM -> PostgreSQL :5432\): users, trusted_sessions, exercises, commitments, private_chats, scenarios) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 340.38 Td (  v  HTTP -> Python AI & Vector Microservice \(:8000, apps/api\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 331.38 Td (CoachGraphService \(LangGraph StateGraph -- apps/api/src/coach/coach_graph.py\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 322.38 Td (  +- Node 1: select_context \(Deterministic Pre-LLM Filter: Tenant Gate + Visibility Gate + Lifecycle Gate + PII Redaction\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 313.38 Td (  +- Node 2: generate_feedback \(ChatOpenAI .with_structured_output .with_retry\(3\) -> Google Gemini Fallback .with_retry\(3\) -> Mock\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 304.38 Td (  +- Node 3: validate_guardrails \(Rejects clinical/therapy/praise language & enforces direct reflection question\)) Tj ET
+BT /F3 6.3 Tf 0.950 0.970 0.990 rg 44.00 295.38 Td (  \\- Vector Store: LangChain PGVector + OpenAIEmbeddings \(text-embedding-3-small, filtered by member_id\) + Langfuse Observability) Tj ET
+BT /F2 10.8 Tf 0.120 0.230 0.540 rg 36.00 266.38 Td (4. Consequential Technical Decisions) Tj ET
+0.60 w 0.820 0.850 0.900 rg 36.00 263.38 523.28 0.50 re f
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 36.00 230.58 99.42 26.80 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 40.50 245.88 Td (Decision) Tj ET
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 135.42 230.58 88.96 26.80 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 139.92 245.88 Td (Alternative) Tj ET
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 139.92 236.48 Td (considered) Tj ET
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 224.38 230.58 136.05 26.80 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 228.88 245.88 Td (Why this choice fits now) Tj ET
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 360.43 230.58 94.19 26.80 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 364.93 245.88 Td (Trade-off or risk) Tj ET
+0.60 w 0.920 0.950 0.980 rg 0.750 0.800 0.860 RG 454.62 230.58 104.66 26.80 re B
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 459.12 245.88 Td (When I would revisit) Tj ET
+BT /F2 7.5 Tf 0.060 0.090 0.160 rg 459.12 236.48 Td (it) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 36.00 175.58 99.42 55.00 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 219.08 Td (1. Split NestJS +) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 209.68 Td (TypeORM Backend) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 200.28 Td (\(:3000\) and Python) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 190.88 Td (LangGraph AI Layer) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 181.48 Td (\(:8000\)) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 135.42 175.58 88.96 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 219.08 Td (Single runtime or) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 209.68 Td (raw SQL in Python.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 224.38 175.58 136.05 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 219.08 Td (Matches OWOW's TypeScript/NestJS) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 209.68 Td (+ TypeORM stack for relational) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 200.28 Td (entities while leveraging Python) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 190.88 Td (for LangGraph + LangChain) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 181.48 Td (PGVector.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 360.43 175.58 94.19 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 219.08 Td (Adds one internal HTTP) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 209.68 Td (hop between backend) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 200.28 Td (\(:3000\) and api) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 190.88 Td (\(:8000\) on the Docker) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 181.48 Td (network.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 454.62 175.58 104.66 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 219.08 Td (Consolidate into a single) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 209.68 Td (NestJS + LangGraph.js) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 200.28 Td (service if <5ms internal) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 190.88 Td (hop overhead is needed at) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 181.48 Td (scale.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 36.00 101.78 99.42 73.80 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 164.08 Td (2. Deterministic) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 154.68 Td (policy & status) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 145.28 Td (filter) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 135.88 Td (\(context_selector.py\)) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 126.48 Td (for Exercise Feedback) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 117.08 Td (instead of RAG) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 135.42 101.78 88.96 73.80 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 164.08 Td (Vector similarity) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 154.68 Td (search to select) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 145.28 Td (exercise feedback) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 135.88 Td (context.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 224.38 101.78 136.05 73.80 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 164.08 Td (Weekly records have explicit) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 154.68 Td (lifecycle state \(active,) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 145.28 Td (completed, superseded,) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 135.88 Td (visibility\). Deterministic code) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 126.48 Td (is 100% auditable and immune to) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 117.08 Td (com-404-1 text collisions.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 360.43 101.78 94.19 73.80 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 164.08 Td (Does not perform) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 154.68 Td (semantic topic) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 145.28 Td (matching across 50+) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 135.88 Td (weeks of exercises in) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 126.48 Td (the exercise-feedback) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 117.08 Td (flow.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 454.62 101.78 104.66 73.80 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 164.08 Td (When a member has >20) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 154.68 Td (weeks of exercises, run) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 145.28 Td (semantic search ONLY) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 135.88 Td (after deterministic) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 126.48 Td (member_id &) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 117.08 Td (visibility='exercise') Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 107.68 Td (filtering.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 36.00 46.78 99.42 55.00 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 90.28 Td (3. Enforce privacy) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 80.88 Td (via narrower) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 71.48 Td (SanitizedModelInput) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 62.08 Td (schema before LLM) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 52.68 Td (node) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 135.42 46.78 88.96 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 90.28 Td (Passing all records) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 80.88 Td (into prompt with) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 71.48 Td ('Ignore) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 62.08 Td (private_chat') Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 52.68 Td (instructions.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 224.38 46.78 136.05 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 90.28 Td (A prompt instruction is not an) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 80.88 Td (access control. Stripping) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 71.48 Td (private_chat & superseded records) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 62.08 Td (pre-LLM makes leakage) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 52.68 Td (structurally impossible.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 360.43 46.78 94.19 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 90.28 Td (Requires explicit) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 80.88 Td (schema updates when) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 71.48 Td (new exercise fields) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 62.08 Td (are added.) Tj ET
+0.60 w 1.000 1.000 1.000 rg 0.780 0.820 0.880 RG 454.62 46.78 104.66 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 90.28 Td (Never relax the pre-LLM) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 80.88 Td (filter; add PostgreSQL) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 71.48 Td (Row-Level Security \(RLS\)) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 62.08 Td (policies in production.) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 5436 >>
+stream
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 36.00 750.89 99.42 55.00 re B
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 794.39 Td (4. LangGraph) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 784.99 Td (StateGraph + .with_st) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 775.59 Td (ructured_output &) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 766.19 Td (.with_retry + Gemini) Tj ET
+BT /F2 7.5 Tf 0.070 0.090 0.150 rg 40.50 756.79 Td (Fallback + PGVector) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 135.42 750.89 88.96 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 794.39 Td (Raw OpenAI SDK) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 784.99 Td (wrapper without) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 775.59 Td (cross-provider) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 139.92 766.19 Td (failover.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 224.38 750.89 136.05 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 794.39 Td (Guarantees all 3 coaching fields) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 784.99 Td (via Pydantic, retries 3x on) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 775.59 Td (OpenAI then fails over to Google) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 766.19 Td (Gemini \(retried 3x\), and powers) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 228.88 756.79 Td (PGVector private search.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 360.43 750.89 94.19 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 794.39 Td (Pulls in langgraph,) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 784.99 Td (langchain-openai,) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 775.59 Td (langchain-postgres,) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 766.19 Td (and langfuse) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 364.93 756.79 Td (dependencies.) Tj ET
+0.60 w 0.980 0.990 1.000 rg 0.780 0.820 0.880 RG 454.62 750.89 104.66 55.00 re B
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 794.39 Td (Keep LangGraph + Langfuse) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 784.99 Td (as the orchestration and) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 775.59 Td (observability backbone as) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 766.19 Td (the coaching product) Tj ET
+BT /F1 7.5 Tf 0.070 0.090 0.150 rg 459.12 756.79 Td (scales.) Tj ET
+BT /F2 10.8 Tf 0.120 0.230 0.540 rg 36.00 730.89 Td (5. First-Release Scope \(Implemented, Mocked, Unfinished\)) Tj ET
+0.60 w 0.820 0.850 0.900 rg 36.00 727.89 523.28 0.50 re f
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 713.39 Td (- Implemented: NestJS + TypeORM Backend \(6 PostgreSQL entities + auto-seeding\); Python LangGraph 3-node StateGraph with OpenAI) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 702.17 Td (ChatGPT \(retry=3\) -> Google Gemini fallback \(retry=3\) -> deterministic fallback; LangChain PGVector semantic search; Langfuse) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 690.95 Td (OpenTelemetry tracing; PII masking \(XXXXXXXXXXXXXXXX\); React UI with scenario dropdown, locked session ID, 503 outage toggle,) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 679.73 Td (Adopt Commitment action, Reviewer Trace, Private Coach Chat, and Caution Reset DB modal; 11/11 pytest tests & 5/5 evaluate.py) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 668.51 Td (scenarios.) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 654.29 Td (- Mocked: Authentication is represented by server-side trustedSessions in fixture.json; deterministic fallback runs when cloud) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 643.07 Td (API keys are omitted.) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 628.85 Td (- Intentionally Unfinished \(Next Steps\): PostgreSQL Row-Level Security \(RLS\) policies, OAuth/JWT session middleware, and) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 617.63 Td (multi-week cohort analytics.) Tj ET
+BT /F2 10.8 Tf 0.120 0.230 0.540 rg 36.00 597.91 Td (6. Privacy Boundary, Failure Handling & Evaluation Plan) Tj ET
+0.60 w 0.820 0.850 0.900 rg 36.00 594.91 523.28 0.50 re f
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 580.41 Td (- Hard Privacy Boundary & PII Redaction: Access control is enforced in NestJS \(session resolution\) and context_selector.py) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 569.19 Td (\(pre-LLM filtering\) before generate_feedback_node and before Langfuse callbacks. Excluded records log ID and reason only) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 557.97 Td (\(never text\). Card and phone numbers are masked as XXXXXXXXXXXXXXXX.) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 543.75 Td (- Resilient Failure Handling: Primary ChatOpenAI retries 3x with exponential backoff + jitter, then fails over to Google) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 532.53 Td (Gemini \(gemini-2.5-flash, retried 3x\). Outages return a clean 502/503 notice while preserving the member's draft answer in the) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 521.31 Td (form.) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 507.09 Td (- Automated & Post-Launch Evaluation: InputSpy in test_coach.py verifies what reaches the model across all scenarios and) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 495.87 Td (adversarial prompt injections; post-launch evaluation tracks Commitment Adoption Rate, Week-over-Week Follow-Through Rate, and) Tj ET
+BT /F1 8.5 Tf 0.070 0.090 0.150 rg 44.00 484.65 Td (LLM-as-a-Judge + Human Coach rubric scores.) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 8 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R] /Count 2 >>
+endobj
+9 0 obj
+<< /Type /Catalog /Pages 8 0 R >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000112 00000 n 
+0000000214 00000 n 
+0000000309 00000 n 
+0000017796 00000 n 
+0000017948 00000 n 
+0000023436 00000 n 
+0000023588 00000 n 
+0000023651 00000 n 
+trailer
+<< /Size 10 /Root 9 0 R >>
+startxref
+23700
+%%EOF

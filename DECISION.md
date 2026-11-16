@@ -56,13 +56,13 @@ CoachGraphService (LangGraph StateGraph — apps/api/src/coach/coach_graph.py)
 - **Implemented:**
   - **NestJS + TypeORM Backend (`apps/backend`):** 6 TypeORM entities (`users`, `trusted_sessions`, `exercises`, `commitments`, `private_chats`, `scenarios`), automatic database seeding (`OnModuleInit`), server-side session resolution (`trustedSessionId -> memberId`), and REST controllers.
   - **Python LangGraph + LangChain `PGVector` + Langfuse AI Service (`apps/api`):** 3-node `StateGraph` (`select_context` $\rightarrow$ `generate_feedback` $\rightarrow$ `validate_guardrails`), `ChatOpenAI.with_structured_output(CoachingFeedback)`, `OpenAIEmbeddings` + `PGVector` similarity search, Langfuse OpenTelemetry `CallbackHandler` tracing (attached strictly after `select_context` so excluded `private_chat` text never enters telemetry), and tone guardrails.
-  - **React + TypeScript UI (`apps/web`):** Scenario switcher (`continuity`, `revised-commitment`, `no-history`), exercise submission form, 503 failure simulation toggle, **"Adopt as My Active Commitment"** lifecycle action, **Reviewer Trace & Privacy Boundary Proof** drawer, **Confidential 1-on-1 AI Coach Chat (`private_chats`)**, and **`pgvector` Semantic Search**.
-  - **Verification Suite:** 9/9 `pytest` tests (`InputSpy` verifying exact `SanitizedModelInput`) and 5/5 scenarios in `scripts/evaluate.py`.
+  - **React + TypeScript UI (`apps/web`):** Scenario dropdown switcher (`continuity`, `revised-commitment`, `no-history`), locked `trustedSessionId` field, exercise submission form, 503 failure simulation toggle, **"Adopt as My Active Commitment"** lifecycle action, **Reviewer Trace & Privacy Boundary Proof** drawer, **Confidential 1-on-1 AI Coach Chat (`private_chats`)** with PII masking (`XXXXXXXXXXXXXXXX`), **`pgvector` Semantic Search**, and a **Caution Reset DB** confirmation modal (`reset`).
+  - **Verification Suite:** 11/11 `pytest` tests (`InputSpy` verifying exact `SanitizedModelInput`, ChatGPT retry + Google Gemini fallback, and PII redaction) and 5/5 scenarios in `scripts/evaluate.py`.
 - **Mocked:**
   - Authentication is represented by `trustedSessions` in `fixture.json` as instructed.
-  - When `OPENAI_API_KEY` is not configured, the service falls back to deterministic coaching feedback and 1536-d local token-hash embeddings so all tests and demos work offline.
+  - When `OPENAI_API_KEY` and `GOOGLE_API_KEY` are not configured, the service falls back to deterministic coaching feedback and 1536-d local token-hash embeddings so all tests and demos work offline.
 - **Intentionally Unfinished (Next Steps):**
-  - PostgreSQL Row-Level Security (RLS) policies, real OAuth/JWT session middleware, and Langfuse OpenTelemetry trace export.
+  - PostgreSQL Row-Level Security (RLS) policies, real OAuth/JWT session middleware, and multi-week longitudinal cohort analytics.
 
 ## 6. Privacy Boundary & Failure Handling
 - **Hard Privacy Boundary:** Access control is enforced in two places before any LLM call: NestJS resolves `trustedSessionId -> resolvedMemberId` via TypeORM, and `select_context_for_member()` (`context_selector.py`) strips all `private_chat` and cross-member records prior to `generate_feedback_node`. Excluded records are logged by ID and reason only—their `text` is omitted from both `SanitizedModelInput` and `ContextTrace`.
