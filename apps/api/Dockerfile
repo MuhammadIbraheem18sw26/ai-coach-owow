@@ -9,10 +9,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Copy dependency definitions first for layer caching
 COPY pyproject.toml uv.lock* ./
 
-# Install dependencies (including pytest & httpx so tests can run inside the container)
+# Install dependencies (including psycopg, pgvector, pytest, httpx)
 RUN uv sync --no-install-project
 
-# Copy application source, fixture data, and evaluation scripts
+# Copy application source, SQL schema, fixture data, and evaluation scripts
+COPY db ./db
 COPY data ./data
 COPY src ./src
 COPY tests ./tests

@@ -13,6 +13,46 @@ interface Scenario {
   newExercise: NewExercise;
 }
 
+interface UserProfile {
+  id: string;
+  name: string;
+  role: string;
+}
+
+interface MemberRecord {
+  id: string;
+  memberId: string;
+  type: 'exercise' | 'commitment' | 'private_chat';
+  visibility: 'exercise' | 'private_chat';
+  week: number;
+  status?: 'completed' | 'active' | 'superseded' | null;
+  replacedBy?: string | null;
+  senderRole?: 'member' | 'coach' | null;
+  question?: string | null;
+  text: string;
+}
+
+interface MemberWorkspace {
+  trustedSessionId: string;
+  user: UserProfile;
+  storageBackend: string;
+  embeddingModel: string;
+  exercises: MemberRecord[];
+  commitments: MemberRecord[];
+  privateChats: MemberRecord[];
+}
+
+interface SemanticSearchResult {
+  id: string;
+  recordType: 'private_chat' | 'exercise' | 'commitment';
+  visibility: 'private_chat' | 'exercise';
+  week: number;
+  status?: string | null;
+  senderRole?: string | null;
+  text: string;
+  similarity: number;
+}
+
 interface TraceDecision {
   recordId: string;
   recordType: string;
@@ -31,6 +71,7 @@ interface FeedbackResponse {
     trustedSessionId: string;
     resolvedMemberId: string;
     adapterUsed: string;
+    storageBackend: string;
     decisions: TraceDecision[];
     sanitizedModelInput: unknown;
   };
@@ -45,11 +86,25 @@ export default function App() {
   const [answer, setAnswer] = useState<string>('');
   const [simulateFailure, setSimulateFailure] = useState<boolean>(false);
 
+  const [workspace, setWorkspace] = useState<MemberWorkspace | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FeedbackResponse | null>(null);
   const [savedCommitmentMsg, setSavedCommitmentMsg] = useState<string | null>(null);
   const [showTrace, setShowTrace] = useState<boolean>(true);
+
+  // Reset DB confirmation modal state
+  const [showResetModal, setShowResetModal] = useState<boolean>(false);
+  const [resetConfirmText, setResetConfirmText] = useState<string>('');
+  const [resetting, setResetting] = useState<boolean>(false);
+
+  // Private Chat & Semantic Vector Search state
+  const [privateChatInput, setPrivateChatInput] = useState<string>('');
+  const [sendingChat, setSendingChat] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('leaving job or career argument');
+  const [searchScope, setSearchScope] = useState<'private_chat' | 'all'>('all');
+  const [searchResults, setSearchResults] = useState<SemanticSearchResult[] | null>(null);
+  const [searching, setSearching] = useState<boolean>(false);
 
   useEffect(() => {
     fetch('/api/scenarios')
@@ -60,8 +115,24 @@ export default function App() {
           applyScenario(data.scenarios[0]);
         }
       })
-      .catch(() => setError('Could not load scenarios from API. Is the FastAPI backend running on :8000?'));
+      .catch(() =>
+        setError(
+          'Could not load scenarios from API. Ensure the NestJS backend (:3000) and Python LangGraph AI service (:8000) are running.'
+        )
+      );
   }, []);
+
+  async function loadWorkspace(sessionId: string) {
+    try {
+      const res = await fetch(`/api/member-workspace?trustedSessionId=${encodeURIComponent(sessionId)}`);
+      if (res.ok) {
+        const data: MemberWorkspace = await res.json();
+        setWorkspace(data);
+      }
+    } catch {
+      // ignore background workspace fetch error
+    }
+  }
 
   function applyScenario(scenario: Scenario) {
     setSelectedScenarioId(scenario.id);
@@ -72,6 +143,8 @@ export default function App() {
     setResult(null);
     setError(null);
     setSavedCommitmentMsg(null);
+    setSearchResults(null);
+    void loadWorkspace(scenario.trustedSessionId);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -92,7 +165,9 @@ export default function App() {
       });
       if (!res.ok) {
         const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody.detail || `Request failed with status ${res.status}`);
+        throw new Error(
+          errBody.message || errBody.detail || `Request failed with status ${res.status}`
+        );
       }
       const data: FeedbackResponse = await res.json();
       setResult(data);
@@ -118,33 +193,146 @@ export default function App() {
       if (!res.ok) throw new Error('Failed to save commitment');
       const saved = await res.json();
       setSavedCommitmentMsg(
-        `Saved '${saved.id}' as your active commitment for Week ${week} (any previous active commitment is now marked superseded).`
+        `Saved '${saved.id}' in PostgreSQL commitments table for Week ${week} (previous active commitment marked superseded).`
       );
+      void loadWorkspace(trustedSessionId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save commitment');
     }
   }
 
-  async function handleResetFixture() {
-    await fetch('/api/reset', { method: 'POST' });
-    setSavedCommitmentMsg('Fixture state reset to original PDF records.');
-    setResult(null);
+  async function handleSendPrivateChat(e: React.FormEvent) {
+    e.preventDefault();
+    if (!privateChatInput.trim()) return;
+    setSendingChat(true);
+    try {
+      const res = await fetch('/api/private-chat/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trustedSessionId,
+          week,
+          message: privateChatInput.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to send private chat message');
+      setPrivateChatInput('');
+      await loadWorkspace(trustedSessionId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not send private chat');
+    } finally {
+      setSendingChat(false);
+    }
+  }
+
+  async function handleVectorSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setSearching(true);
+    try {
+      const res = await fetch('/api/private-chat/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trustedSessionId,
+          query: searchQuery.trim(),
+          scope: searchScope,
+          topK: 5,
+        }),
+      });
+      if (!res.ok) throw new Error('Vector search failed');
+      const data = await res.json();
+      setSearchResults(data.results || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Vector search error');
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  async function handleResetFixture(e: React.FormEvent) {
+    e.preventDefault();
+    if (resetConfirmText.trim().toLowerCase() !== 'reset') return;
+    setResetting(true);
+    try {
+      await fetch('/api/reset', { method: 'POST' });
+      setSavedCommitmentMsg('PostgreSQL tables & pgvector embeddings reset to original fixture data.');
+      setResult(null);
+      setSearchResults(null);
+      setShowResetModal(false);
+      setResetConfirmText('');
+      await loadWorkspace(trustedSessionId);
+    } finally {
+      setResetting(false);
+    }
   }
 
   return (
     <div className="layout">
       <header className="topbar">
-        <div>
-          <h1>The Coach That Remembers</h1>
-          <p className="subtitle">Leadership Programme — Weekly Exercise & Grounded AI Feedback</p>
+        <div className="topbar-left">
+          <button
+            type="button"
+            className="btn-danger-outline"
+            onClick={() => {
+              setResetConfirmText('');
+              setShowResetModal(true);
+            }}
+          >
+            Reset DB &amp; Fixture Data
+          </button>
+          <div>
+            <h1>The Coach That Remembers</h1>
+          </div>
         </div>
-        <button type="button" className="btn-secondary" onClick={handleResetFixture}>
-          Reset Fixture Data
-        </button>
       </header>
 
+      {showResetModal && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <div className="caution-banner">
+              <strong>Caution: Reset All Database &amp; Fixture Data</strong>
+            </div>
+            <p className="muted">
+              This action will wipe any newly added commitments and private chat messages in
+              PostgreSQL + <code>pgvector</code> and restore the original trial-day fixture state.
+            </p>
+            <form onSubmit={handleResetFixture} className="form">
+              <label>
+                Type <code>reset</code> below to confirm deletion:
+                <input
+                  autoFocus
+                  placeholder="Type reset to confirm"
+                  value={resetConfirmText}
+                  onChange={(e) => setResetConfirmText(e.target.value)}
+                />
+              </label>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => {
+                    setShowResetModal(false);
+                    setResetConfirmText('');
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-danger"
+                  disabled={resetConfirmText.trim().toLowerCase() !== 'reset' || resetting}
+                >
+                  {resetting ? 'Resetting...' : 'Confirm Reset DB'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <section className="scenario-bar">
-        <span>Load Fixture Scenario:</span>
+        <span>Load Member Session / Scenario:</span>
         {scenarios.map((s) => (
           <button
             key={s.id}
@@ -155,16 +343,27 @@ export default function App() {
             {s.id} ({s.trustedSessionId})
           </button>
         ))}
+        {workspace && (
+          <span className="user-badge">
+            Active User: <strong>{workspace.user.name}</strong> — <em>{workspace.user.role}</em>
+          </span>
+        )}
       </section>
 
       <main className="grid">
         <section className="card">
-          <h2>Weekly Exercise Submission</h2>
+          <h2>1. Weekly Exercise Submission (Exercise-Visible Flow)</h2>
           <form onSubmit={handleSubmit} className="form">
             <div className="row">
               <label>
-                Server Session Fixture (`trustedSessionId`)
-                <input value={trustedSessionId} readOnly />
+                Server Session Fixture (`trustedSessionId`) — Locked
+                <input
+                  value={trustedSessionId}
+                  readOnly
+                  disabled
+                  className="input-locked"
+                  title="Server-selected session fixture (uneditable by client)"
+                />
               </label>
               <label>
                 Week
@@ -184,7 +383,7 @@ export default function App() {
             <label>
               Your Reflection / Answer
               <textarea
-                rows={4}
+                rows={3}
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
               />
@@ -219,7 +418,9 @@ export default function App() {
               </div>
               <div className="feedback-item">
                 <span className="badge">Reflection Question</span>
-                <p><strong>{result.feedback.reflectionQuestion}</strong></p>
+                <p>
+                  <strong>{result.feedback.reflectionQuestion}</strong>
+                </p>
               </div>
               <div className="feedback-item">
                 <span className="badge">Possible Next Commitment</span>
@@ -235,7 +436,7 @@ export default function App() {
 
         <section className="card trace-card">
           <div className="trace-header">
-            <h2>Reviewer Trace & Privacy Boundary Proof</h2>
+            <h2>2. Reviewer Trace &amp; Privacy Boundary Proof</h2>
             <button
               type="button"
               className="btn-secondary"
@@ -245,14 +446,20 @@ export default function App() {
             </button>
           </div>
 
-          {!result && <p className="muted">Submit the exercise to inspect context selection and model input.</p>}
+          {!result && (
+            <p className="muted">
+              Submit the exercise to inspect deterministic context selection and verify that{' '}
+              <code>private_chats</code> and other members&apos; records never enter the model input.
+            </p>
+          )}
 
           {result && showTrace && (
             <div className="trace-content">
               <p>
                 <strong>Resolved Member:</strong> <code>{result.trace.resolvedMemberId}</code> (via{' '}
                 <code>{result.trace.trustedSessionId}</code>) | <strong>Adapter:</strong>{' '}
-                <code>{result.trace.adapterUsed}</code>
+                <code>{result.trace.adapterUsed}</code> | <strong>Store:</strong>{' '}
+                <code>{result.trace.storageBackend}</code>
               </p>
 
               <h4>1. Deterministic Record Filtering (Pre-LLM)</h4>
@@ -267,10 +474,19 @@ export default function App() {
                 </thead>
                 <tbody>
                   {result.trace.decisions.map((d) => (
-                    <tr key={d.recordId} className={d.decision === 'included' ? 'row-inc' : 'row-exc'}>
-                      <td><code>{d.recordId}</code></td>
-                      <td>{d.recordType} (W{d.week})</td>
-                      <td><strong>{d.decision.toUpperCase()}</strong></td>
+                    <tr
+                      key={d.recordId}
+                      className={d.decision === 'included' ? 'row-inc' : 'row-exc'}
+                    >
+                      <td>
+                        <code>{d.recordId}</code>
+                      </td>
+                      <td>
+                        {d.recordType} (W{d.week})
+                      </td>
+                      <td>
+                        <strong>{d.decision.toUpperCase()}</strong>
+                      </td>
                       <td>{d.reason}</td>
                     </tr>
                   ))}
@@ -285,6 +501,150 @@ export default function App() {
           )}
         </section>
       </main>
+
+      {workspace && (
+        <section className="grid bottom-grid">
+          <div className="card">
+            <div className="trace-header">
+              <h2>3. Confidential 1-on-1 AI Coach Chat (`private_chats` Table)</h2>
+              <span className="private-pill">Strictly Private — Isolated from Exercise Flow</span>
+            </div>
+            <p className="muted">
+              Messages here are stored in PostgreSQL <code>private_chats</code> with 1536-d{' '}
+              <code>pgvector</code> embeddings for personal recall, and are deterministically blocked
+              from entering the Weekly Exercise Feedback prompt.
+            </p>
+
+            <div className="chat-thread">
+              {workspace.privateChats.length === 0 ? (
+                <p className="muted">No private chat messages yet for {workspace.user.id}.</p>
+              ) : (
+                workspace.privateChats.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={
+                      msg.senderRole === 'coach' ? 'chat-bubble coach-bubble' : 'chat-bubble member-bubble'
+                    }
+                  >
+                    <div className="chat-meta">
+                      <code>{msg.id}</code> • <strong>{msg.senderRole || 'member'}</strong> • Week{' '}
+                      {msg.week} • <code>visibility={msg.visibility}</code>
+                    </div>
+                    <p>{msg.text}</p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <form onSubmit={handleSendPrivateChat} className="chat-form">
+              <input
+                placeholder="Share a confidential reflection with your private coach..."
+                value={privateChatInput}
+                onChange={(e) => setPrivateChatInput(e.target.value)}
+              />
+              <button type="submit" className="btn-primary" disabled={sendingChat}>
+                {sendingChat ? 'Sending...' : 'Send Private Message'}
+              </button>
+            </form>
+          </div>
+
+          <div className="card">
+            <h2>4. Semantic Vector Search (`pgvector` Cosine Similarity) &amp; Member DB Tables</h2>
+            <p className="muted">
+              Search across <strong>{workspace.user.id}</strong>&apos;s own embedded records using{' '}
+              <code>1 - (embedding &lt;=&gt; query_vec)</code>. Cross-member records (e.g.{' '}
+              <code>member-404</code>) are filtered at the SQL query boundary.
+            </p>
+
+            <form onSubmit={handleVectorSearch} className="search-bar">
+              <input
+                placeholder="Search your private chats, exercises, and commitments..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select
+                value={searchScope}
+                onChange={(e) => setSearchScope(e.target.value as 'private_chat' | 'all')}
+              >
+                <option value="all">All My Records (Private Chat + Exercises + Commitments)</option>
+                <option value="private_chat">Only My Private Chats</option>
+              </select>
+              <button type="submit" className="btn-primary" disabled={searching}>
+                {searching ? 'Searching...' : 'Vector Search'}
+              </button>
+            </form>
+
+            {searchResults && (
+              <div className="search-results">
+                <h4>Top Vector Matches (Scoped to {workspace.user.id})</h4>
+                <table className="trace-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Table / Type</th>
+                      <th>Similarity</th>
+                      <th>Text</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {searchResults.map((r) => (
+                      <tr key={r.id}>
+                        <td>
+                          <code>{r.id}</code>
+                        </td>
+                        <td>
+                          <code>{r.recordType}</code> (W{r.week})
+                        </td>
+                        <td>
+                          <strong>{r.similarity.toFixed(3)}</strong>
+                        </td>
+                        <td>{r.text}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <h4>PostgreSQL Member History (`exercises` &amp; `commitments` Tables)</h4>
+            <table className="trace-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Table</th>
+                  <th>Week / Status</th>
+                  <th>Text</th>
+                </tr>
+              </thead>
+              <tbody>
+                {workspace.commitments.map((c) => (
+                  <tr key={c.id} className={c.status === 'active' ? 'row-inc' : ''}>
+                    <td>
+                      <code>{c.id}</code>
+                    </td>
+                    <td>commitments</td>
+                    <td>
+                      W{c.week} • <strong>{c.status}</strong>
+                      {c.replacedBy ? ` (-> ${c.replacedBy})` : ''}
+                    </td>
+                    <td>{c.text}</td>
+                  </tr>
+                ))}
+                {workspace.exercises.map((ex) => (
+                  <tr key={ex.id}>
+                    <td>
+                      <code>{ex.id}</code>
+                    </td>
+                    <td>exercises</td>
+                    <td>W{ex.week}</td>
+                    <td>{ex.text}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

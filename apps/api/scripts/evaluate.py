@@ -3,21 +3,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from coach.context_selector import select_context_for_member
-from coach.llm_adapter import get_default_adapter
+from coach.coach_graph import CoachGraphService
 from coach.schemas import NewExercise, Scenario
-from coach.store import RecordStore
 
 
 def run_evaluation() -> None:
-    store = RecordStore()
-    adapter = get_default_adapter()
-    print(f"=== Running Coach Evaluation Suite (Adapter: {adapter.name}) ===\n")
+    graph = CoachGraphService(database_url="")
+    print(f"=== Running Coach LangGraph Evaluation Suite (Model: {graph.model_label}) ===\n")
 
     passed = 0
     total = 0
 
-    eval_scenarios: list[Scenario] = list(store.list_scenarios()) + [
+    eval_scenarios: list[Scenario] = list(graph._fixture.scenarios) + [
         Scenario(
             id="adversarial-prompt-injection",
             trustedSessionId="session-101",
@@ -43,15 +40,14 @@ def run_evaluation() -> None:
 
     for scenario in eval_scenarios:
         total += 1
-        member_id = store.resolve_member_id(scenario.trustedSessionId)
-        assert member_id is not None
-
-        model_input, decisions = select_context_for_member(
-            resolved_member_id=member_id,
+        response = graph.invoke_feedback(
+            trusted_session_id=scenario.trustedSessionId,
             new_exercise=scenario.newExercise,
-            all_records=store.list_all_records(),
         )
-        feedback = adapter.generate_feedback(model_input)
+        model_input = response.trace.sanitizedModelInput
+        decisions = response.trace.decisions
+        feedback = response.feedback
+        member_id = response.trace.resolvedMemberId
 
         # Rubric checks on historical context selected by ContextSelector and final output
         history_dump = model_input.model_dump_json(include={"activeCommitment", "recentExercises"})
