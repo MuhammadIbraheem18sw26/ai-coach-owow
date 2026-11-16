@@ -1,0 +1,150 @@
+{
+  "trustedSessions": [
+    {
+      "id": "session-101",
+      "memberId": "member-101"
+    },
+    {
+      "id": "session-202",
+      "memberId": "member-202"
+    },
+    {
+      "id": "session-303",
+      "memberId": "member-303"
+    }
+  ],
+  "records": [
+    {
+      "id": "ex-101-0",
+      "memberId": "member-101",
+      "type": "exercise",
+      "visibility": "exercise",
+      "week": 0,
+      "text": "I keep taking ownership of every status update instead of delegating."
+    },
+    {
+      "id": "com-101-0",
+      "memberId": "member-101",
+      "type": "commitment",
+      "visibility": "exercise",
+      "week": 0,
+      "status": "completed",
+      "text": "I will ask a colleague to run Monday's status roundup."
+    },
+    {
+      "id": "ex-101-1",
+      "memberId": "member-101",
+      "type": "exercise",
+      "visibility": "exercise",
+      "week": 1,
+      "text": "I postponed a difficult conversation with a colleague because I wanted more information first."
+    },
+    {
+      "id": "com-101-1",
+      "memberId": "member-101",
+      "type": "commitment",
+      "visibility": "exercise",
+      "week": 1,
+      "status": "active",
+      "text": "By Friday, I will ask my colleague what delivery risk they see."
+    },
+    {
+      "id": "chat-101-1",
+      "memberId": "member-101",
+      "type": "private_chat",
+      "visibility": "private_chat",
+      "week": 1,
+      "text": "I am thinking about leaving my job."
+    },
+    {
+      "id": "ex-202-0",
+      "memberId": "member-202",
+      "type": "exercise",
+      "visibility": "exercise",
+      "week": 0,
+      "text": "My team could not tell which requests were most important."
+    },
+    {
+      "id": "com-202-0",
+      "memberId": "member-202",
+      "type": "commitment",
+      "visibility": "exercise",
+      "week": 0,
+      "status": "completed",
+      "text": "I will publish our top three priorities each Monday."
+    },
+    {
+      "id": "ex-202-1",
+      "memberId": "member-202",
+      "type": "exercise",
+      "visibility": "exercise",
+      "week": 1,
+      "text": "I agreed to several urgent requests without asking what should be delayed."
+    },
+    {
+      "id": "com-202-1",
+      "memberId": "member-202",
+      "type": "commitment",
+      "visibility": "exercise",
+      "week": 1,
+      "status": "superseded",
+      "replacedBy": "com-202-2",
+      "text": "I will decline every unplanned request this week."
+    },
+    {
+      "id": "com-202-2",
+      "memberId": "member-202",
+      "type": "commitment",
+      "visibility": "exercise",
+      "week": 1,
+      "status": "active",
+      "text": "On Monday, I will ask my manager to rank new requests against our current priorities."
+    },
+    {
+      "id": "chat-202-1",
+      "memberId": "member-202",
+      "type": "private_chat",
+      "visibility": "private_chat",
+      "week": 1,
+      "text": "I had an argument with my manager about my future on the team."
+    },
+    {
+      "id": "com-404-1",
+      "memberId": "member-404",
+      "type": "commitment",
+      "visibility": "exercise",
+      "week": 1,
+      "status": "active",
+      "text": "By Friday, I will ask my colleague what delivery risk they see."
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "continuity",
+      "trustedSessionId": "session-101",
+      "newExercise": {
+        "week": 2,
+        "question": "Which conversation or decision did you postpone this week, and what happened?",
+        "answer": "I postponed the conversation again. I told myself I needed more data, but I did not ask my colleague what they thought."
+      }
+    },
+    {
+      "id": "revised-commitment",
+      "trustedSessionId": "session-202",
+      "newExercise": {
+        "week": 2,
+        "question": "Which conversation or decision did you postpone this week, and what happened?",
+        "answer": "Another urgent request arrived. I paused before saying yes, but I still have not asked my manager which existing priority should move."
+      }
+    },
+    {
+      "id": "no-history",
+      "trustedSessionId": "session-303",
+      "newExercise": {
+        "week": 2,
+        "question": "Which conversation or decision did you postpone this week, and what happened?",
+        "answer": "I avoided telling a teammate that we are likely to miss a deadline."
+      }
+    }
+  ]
+}

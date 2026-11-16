@@ -1,32 +1,33 @@
 import pytest
 from fastapi.testclient import TestClient
-from coach.llm_adapter import MockCoachAdapter, _normalize_openai_model, validate_coaching_output
+from coach.coach_graph import CoachGraphService, normalize_openai_model, validate_coaching_output
 from coach.main import create_app
 from coach.schemas import CoachingFeedback, SanitizedModelInput
-from coach.store import RecordStore
 
 
-class SpyCoachAdapter:
-    """Wraps MockCoachAdapter and records every exact SanitizedModelInput that reaches the model."""
+class InputSpy:
+    """Captures every exact SanitizedModelInput that reaches the LangGraph generate_feedback node."""
 
     def __init__(self) -> None:
-        self._delegate = MockCoachAdapter()
         self.captured_inputs: list[SanitizedModelInput] = []
 
-    @property
-    def name(self) -> str:
-        return "spy-adapter"
-
-    def generate_feedback(self, model_input: SanitizedModelInput) -> CoachingFeedback:
+    def __call__(self, model_input: SanitizedModelInput) -> None:
         self.captured_inputs.append(model_input)
-        return self._delegate.generate_feedback(model_input)
 
 
-def make_test_setup() -> tuple[TestClient, RecordStore, SpyCoachAdapter]:
-    store = RecordStore()
-    spy = SpyCoachAdapter()
-    app = create_app(store=store, adapter=spy)
-    return TestClient(app), store, spy
+class _ScenarioProxy:
+    def __init__(self, graph: CoachGraphService) -> None:
+        self._graph = graph
+
+    def list_scenarios(self):
+        return list(self._graph._fixture.scenarios)
+
+
+def make_test_setup() -> tuple[TestClient, _ScenarioProxy, InputSpy]:
+    spy = InputSpy()
+    graph = CoachGraphService(database_url="", on_model_input=spy, force_deterministic=True)
+    app = create_app(graph=graph)
+    return TestClient(app), _ScenarioProxy(graph), spy
 
 
 def test_privacy_boundary_across_all_scenarios() -> None:
@@ -243,11 +244,75 @@ def test_guardrail_rejects_banned_therapy_and_praise_terms() -> None:
 
 
 def test_openai_model_id_normalization() -> None:
-    assert _normalize_openai_model("openai/gpt-4o-mini") == "gpt-4o-mini"
-    assert _normalize_openai_model("gpt-4o-mini") == "gpt-4o-mini"
-    assert _normalize_openai_model("", None) == "gpt-4o-mini"
+    assert normalize_openai_model("openai/gpt-4o-mini") == "gpt-4o-mini"
+    assert normalize_openai_model("gpt-4o-mini") == "gpt-4o-mini"
+    assert normalize_openai_model("", None) == "gpt-4o-mini"
     assert (
-        _normalize_openai_model("openai/gpt-4o-mini", "https://openrouter.ai/api/v1")
+        normalize_openai_model("openai/gpt-4o-mini", "https://openrouter.ai/api/v1")
         == "openai/gpt-4o-mini"
     )
+
+
+def test_private_chat_vector_search_and_exercise_isolation() -> None:
+    """
+    Verifies:
+    1. Member workspace returns only that member's exercises, commitments, and private_chats.
+    2. Vector search finds the member's own private_chat ('leaving my job') and never returns
+       another member's private chat ('argument with my manager') or commitment ('com-404-1').
+    3. Sending a new confidential private chat message persists it for private search, but
+       it STILL never leaks into the exercise-feedback model input.
+    """
+    client, _, spy = make_test_setup()
+
+    # 1. Check member workspace for session-101
+    ws_res = client.get("/api/member-workspace", params={"trustedSessionId": "session-101"})
+    assert ws_res.status_code == 200
+    ws = ws_res.json()
+    assert ws["user"]["id"] == "member-101"
+    assert [c["id"] for c in ws["privateChats"]] == ["chat-101-1"]
+
+    # 2. Vector search for 'leaving my job' within session-101
+    search_res = client.post(
+        "/api/private-chat/search",
+        json={
+            "trustedSessionId": "session-101",
+            "query": "thinking about leaving my job",
+            "scope": "all",
+            "topK": 5,
+        },
+    )
+    assert search_res.status_code == 200
+    results = search_res.json()["results"]
+    assert results[0]["id"] == "chat-101-1"
+    returned_ids = {r["id"] for r in results}
+    assert "chat-202-1" not in returned_ids
+    assert "com-404-1" not in returned_ids
+
+    # 3. Send a new private chat message and verify it never leaks into exercise feedback
+    chat_res = client.post(
+        "/api/private-chat/messages",
+        json={
+            "trustedSessionId": "session-101",
+            "week": 2,
+            "message": "Confidentially, I am interviewing at another company next Tuesday.",
+        },
+    )
+    assert chat_res.status_code == 200
+
+    fb_res = client.post(
+        "/api/feedback",
+        json={
+            "trustedSessionId": "session-101",
+            "newExercise": {
+                "week": 2,
+                "question": "Which conversation or decision did you postpone this week, and what happened?",
+                "answer": "I postponed the conversation again because I wanted more data.",
+            },
+        },
+    )
+    assert fb_res.status_code == 200
+    model_input_json = spy.captured_inputs[-1].model_dump_json()
+    assert "interviewing at another company" not in model_input_json
+    assert "leaving my job" not in model_input_json
+
 
