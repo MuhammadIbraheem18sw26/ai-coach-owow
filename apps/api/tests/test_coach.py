@@ -316,3 +316,107 @@ def test_private_chat_vector_search_and_exercise_isolation() -> None:
     assert "leaving my job" not in model_input_json
 
 
+def test_chatgpt_retry_and_google_gemini_fallback() -> None:
+    """
+    Verifies:
+    1. When primary ChatOpenAI fails across all retry attempts, CoachGraphService retries
+       and automatically escalates to the Google Gemini fallback runnable.
+    2. When Gemini initially fails on attempt 1 and succeeds on retry attempt 2, the retry
+       mechanism recovers and returns the Gemini CoachingFeedback with full trace attribution.
+    """
+    from langchain_core.runnables import RunnableLambda
+    from coach.schemas import NewExercise
+
+    graph = CoachGraphService(database_url="", force_deterministic=True)
+    graph._max_retries = 2
+
+    openai_attempts = 0
+    gemini_attempts = 0
+
+    def failing_openai(_messages):
+        nonlocal openai_attempts
+        openai_attempts += 1
+        raise RuntimeError("Simulated OpenAI 503 outage")
+
+    def flaky_gemini(_prompt: str) -> CoachingFeedback:
+        nonlocal gemini_attempts
+        gemini_attempts += 1
+        if gemini_attempts < 2:
+            raise RuntimeError("Simulated transient Gemini 429 rate limit on attempt 1")
+        return CoachingFeedback(
+            observation="You paused before saying yes, which is progress toward your active commitment.",
+            reflectionQuestion="What stopped you from asking your manager to rank the new request?",
+            possibleNextCommitment="Ask your manager on Monday to rank any urgent request against the top three priorities.",
+        )
+
+    graph._structured_llm = RunnableLambda(failing_openai).with_retry(
+        stop_after_attempt=2, wait_exponential_jitter=False
+    )
+    graph._gemini_structured_runnable = RunnableLambda(flaky_gemini).with_retry(
+        stop_after_attempt=2, wait_exponential_jitter=False
+    )
+
+    res = graph.invoke_feedback(
+        trusted_session_id="session-202",
+        new_exercise=NewExercise(
+            week=2,
+            question="Which conversation or decision did you postpone this week, and what happened?",
+            answer="Another urgent request arrived and I paused before saying yes.",
+        ),
+    )
+
+    assert openai_attempts == 2  # Retried OpenAI twice before failing over
+    assert gemini_attempts == 2  # Retried Gemini after attempt 1 failed, succeeded on attempt 2
+    assert "GeminiFallback" in res.trace.adapterUsed
+    assert "ChatOpenAI" in res.trace.adapterUsed
+    assert "paused before saying yes" in res.feedback.observation
+
+
+def test_card_and_private_number_pii_redaction_in_chat_and_exercises() -> None:
+    """
+    Verifies that credit/debit card numbers and private phone numbers are masked with
+    'XXXXXXXXXXXXXXXX' before being stored in private_chats or passed to the LLM.
+    """
+    client, _, spy = make_test_setup()
+
+    # 1. Send card number and phone number in Private Chat
+    chat_res = client.post(
+        "/api/private-chat/messages",
+        json={
+            "trustedSessionId": "session-101",
+            "week": 2,
+            "message": "My corporate card is 4532 1234 5678 9012 and my private number is +31 6 12345678.",
+        },
+    )
+    assert chat_res.status_code == 200
+    chat_data = chat_res.json()
+    member_text = chat_data["memberMessage"]["text"]
+    coach_text = chat_data["coachMessage"]["text"]
+
+    assert "4532 1234 5678 9012" not in member_text
+    assert "12345678" not in member_text
+    assert "XXXXXXXXXXXXXXXX" in member_text
+    assert "4532 1234 5678 9012" not in coach_text
+    assert "12345678" not in coach_text
+
+    # 2. Verify exercise submission also redacts card/phone numbers before reaching the LLM
+    fb_res = client.post(
+        "/api/feedback",
+        json={
+            "trustedSessionId": "session-101",
+            "newExercise": {
+                "week": 2,
+                "question": "Which conversation did you postpone?",
+                "answer": "I postponed calling +31 6 98765432 about card 5412-7534-9012-3456.",
+            },
+        },
+    )
+    assert fb_res.status_code == 200
+    captured_json = spy.captured_inputs[-1].model_dump_json()
+    assert "98765432" not in captured_json
+    assert "5412-7534-9012-3456" not in captured_json
+    assert "XXXXXXXXXXXXXXXX" in captured_json
+
+
+
+

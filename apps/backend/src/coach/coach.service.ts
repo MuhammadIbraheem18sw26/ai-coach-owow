@@ -34,6 +34,15 @@ const DEFAULT_USERS: Record<string, { id: string; name: string; role: string }> 
   },
 };
 
+const SENSITIVE_NUMBER_REGEX = /\+?\d[\d\s\-.\(\)]{6,}\d/g;
+
+function redactSensitivePii(text: string): string {
+  return text.replace(SENSITIVE_NUMBER_REGEX, (match) => {
+    const digitCount = (match.match(/\d/g) || []).length;
+    return digitCount >= 8 ? 'X'.repeat(Math.max(16, digitCount)) : match;
+  });
+}
+
 @Injectable()
 export class CoachService implements OnModuleInit {
   private readonly aiServiceUrl: string;
@@ -384,9 +393,13 @@ export class CoachService implements OnModuleInit {
     message: string;
   }) {
     const memberId = await this.resolveMemberId(payload.trustedSessionId);
+    const sanitizedPayload = {
+      ...payload,
+      message: redactSensitivePii(payload.message),
+    };
     let data: any;
     try {
-      const res = await axios.post(`${this.aiServiceUrl}/api/private-chat/messages`, payload);
+      const res = await axios.post(`${this.aiServiceUrl}/api/private-chat/messages`, sanitizedPayload);
       data = res.data;
     } catch (err: any) {
       const status = err?.response?.status || HttpStatus.BAD_GATEWAY;
@@ -394,7 +407,7 @@ export class CoachService implements OnModuleInit {
       throw new HttpException(detail, status);
     }
 
-    // Persist both messages into TypeORM private_chats table
+    // Persist both messages into TypeORM private_chats table (with PII masked)
     if (data?.memberMessage) {
       await this.privateChatRepo.save(
         this.privateChatRepo.create({
@@ -403,7 +416,7 @@ export class CoachService implements OnModuleInit {
           visibility: 'private_chat',
           sender_role: 'member',
           week: payload.week,
-          text: data.memberMessage.text,
+          text: redactSensitivePii(data.memberMessage.text),
         }),
       );
     }
@@ -415,7 +428,7 @@ export class CoachService implements OnModuleInit {
           visibility: 'private_chat',
           sender_role: 'coach',
           week: payload.week,
-          text: data.coachMessage.text,
+          text: redactSensitivePii(data.coachMessage.text),
         }),
       );
     }

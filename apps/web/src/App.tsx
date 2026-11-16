@@ -72,9 +72,20 @@ interface FeedbackResponse {
     resolvedMemberId: string;
     adapterUsed: string;
     storageBackend: string;
+    langfuseEnabled?: boolean;
+    langfuseTraceId?: string | null;
     decisions: TraceDecision[];
     sanitizedModelInput: unknown;
   };
+}
+
+const SENSITIVE_NUMBER_REGEX = /\+?\d[\d\s\-.\(\)]{6,}\d/g;
+
+function maskSensitiveNumbers(text: string): string {
+  return text.replace(SENSITIVE_NUMBER_REGEX, (match) => {
+    const digitCount = (match.match(/\d/g) || []).length;
+    return digitCount >= 8 ? 'X'.repeat(Math.max(16, digitCount)) : match;
+  });
 }
 
 export default function App() {
@@ -270,20 +281,8 @@ export default function App() {
   return (
     <div className="layout">
       <header className="topbar">
-        <div className="topbar-left">
-          <button
-            type="button"
-            className="btn-danger-outline"
-            onClick={() => {
-              setResetConfirmText('');
-              setShowResetModal(true);
-            }}
-          >
-            Reset DB &amp; Fixture Data
-          </button>
-          <div>
-            <h1>The Coach That Remembers</h1>
-          </div>
+        <div>
+          <h1>The Coach That Remembers</h1>
         </div>
       </header>
 
@@ -332,22 +331,38 @@ export default function App() {
       )}
 
       <section className="scenario-bar">
-        <span>Load Member Session / Scenario:</span>
-        {scenarios.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            className={selectedScenarioId === s.id ? 'chip active' : 'chip'}
-            onClick={() => applyScenario(s)}
+        <label className="scenario-label">
+          <span>Load Member Session / Scenario:</span>
+          <select
+            className="scenario-select"
+            value={selectedScenarioId}
+            onChange={(e) => {
+              const found = scenarios.find((s) => s.id === e.target.value);
+              if (found) applyScenario(found);
+            }}
           >
-            {s.id} ({s.trustedSessionId})
-          </button>
-        ))}
+            {scenarios.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.id} ({s.trustedSessionId})
+              </option>
+            ))}
+          </select>
+        </label>
         {workspace && (
           <span className="user-badge">
             Active User: <strong>{workspace.user.name}</strong> — <em>{workspace.user.role}</em>
           </span>
         )}
+        <button
+          type="button"
+          className="btn-danger-outline btn-end-row"
+          onClick={() => {
+            setResetConfirmText('');
+            setShowResetModal(true);
+          }}
+        >
+          Reset DB &amp; Fixture Data
+        </button>
       </section>
 
       <main className="grid">
@@ -459,7 +474,12 @@ export default function App() {
                 <strong>Resolved Member:</strong> <code>{result.trace.resolvedMemberId}</code> (via{' '}
                 <code>{result.trace.trustedSessionId}</code>) | <strong>Adapter:</strong>{' '}
                 <code>{result.trace.adapterUsed}</code> | <strong>Store:</strong>{' '}
-                <code>{result.trace.storageBackend}</code>
+                <code>{result.trace.storageBackend}</code> | <strong>Langfuse:</strong>{' '}
+                <code>
+                  {result.trace.langfuseEnabled
+                    ? `Active (${result.trace.langfuseTraceId || 'traced'})`
+                    : 'Standby (set LANGFUSE_PUBLIC_KEY)'}
+                </code>
               </p>
 
               <h4>1. Deterministic Record Filtering (Pre-LLM)</h4>
@@ -530,7 +550,7 @@ export default function App() {
                       <code>{msg.id}</code> • <strong>{msg.senderRole || 'member'}</strong> • Week{' '}
                       {msg.week} • <code>visibility={msg.visibility}</code>
                     </div>
-                    <p>{msg.text}</p>
+                    <p>{maskSensitiveNumbers(msg.text)}</p>
                   </div>
                 ))
               )}

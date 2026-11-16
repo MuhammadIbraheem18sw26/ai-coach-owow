@@ -1,3 +1,4 @@
+import re
 from .schemas import (
     MemberRecord,
     NewExercise,
@@ -5,6 +6,24 @@ from .schemas import (
     SanitizedModelInput,
     TraceDecision,
 )
+
+_SENSITIVE_NUMBER_PATTERN = re.compile(r"\+?\d[\d\s\-\.\(\)]{6,}\d")
+
+
+def redact_sensitive_pii(text: str) -> str:
+    """
+    Deterministic PII redaction guardrail:
+    Masks credit/debit card numbers (13-19 digits) and private phone/ID numbers (8+ digits)
+    with 'XXXXXXXXXXXXXXXX' before text enters storage, vector embeddings, or LLM prompts.
+    """
+    def _mask_match(match: re.Match[str]) -> str:
+        raw = match.group(0)
+        digit_count = sum(1 for ch in raw if ch.isdigit())
+        if digit_count >= 8:
+            return "X" * max(16, digit_count)
+        return raw
+
+    return _SENSITIVE_NUMBER_PATTERN.sub(_mask_match, text)
 
 
 def select_context_for_member(
@@ -176,8 +195,14 @@ def select_context_for_member(
         for ex in selected_exercises
     ]
 
+    redacted_exercise = NewExercise(
+        week=new_exercise.week,
+        question=redact_sensitive_pii(new_exercise.question),
+        answer=redact_sensitive_pii(new_exercise.answer),
+    )
+
     model_input = SanitizedModelInput(
-        newExercise=new_exercise,
+        newExercise=redacted_exercise,
         activeCommitment=sanitized_commitment,
         recentExercises=sanitized_exercises,
     )

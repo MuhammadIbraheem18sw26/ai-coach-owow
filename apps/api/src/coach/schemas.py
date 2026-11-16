@@ -77,6 +77,8 @@ class ContextTrace(BaseModel):
     resolvedMemberId: str
     adapterUsed: str
     storageBackend: str = "in-memory"
+    langfuseEnabled: bool = False
+    langfuseTraceId: Optional[str] = None
     decisions: list[TraceDecision]
     sanitizedModelInput: SanitizedModelInput
 

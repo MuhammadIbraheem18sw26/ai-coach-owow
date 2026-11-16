@@ -20,8 +20,11 @@ body { margin: 0; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .db-pill { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 5px 10px; border-radius: 999px; font-size: 0.8rem; }
 .subtitle { margin: 4px 0 0; color: #4b5563; font-size: 0.9rem; }
-.scenario-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
-.user-badge { margin-left: auto; font-size: 0.85rem; color: #374151; background: #fff; border: 1px solid #e5e7eb; padding: 5px 12px; border-radius: 999px; }
+.scenario-bar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+.scenario-label { display: flex; flex-direction: row; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; }
+.scenario-select { padding: 7px 12px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-weight: 600; cursor: pointer; }
+.user-badge { font-size: 0.85rem; color: #065f46; background: #ecfdf5; border: 1px solid #6ee7b7; padding: 6px 14px; border-radius: 999px; }
+.btn-end-row { margin-left: auto; }
 .chip { border: 1px solid #d1d5db; background: #fff; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
 .chip.active { background: #111827; color: #fff; border-color: #111827; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }

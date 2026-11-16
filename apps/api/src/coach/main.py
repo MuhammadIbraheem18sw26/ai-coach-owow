@@ -37,12 +37,13 @@ def create_app(
     )
 
     @app.get("/api/health")
-    def health() -> dict[str, str]:
+    def health() -> dict:
         return {
             "status": "ok",
             "adapter": coach_graph.model_label,
             "storageBackend": coach_graph.storage_backend,
             "embeddingModel": coach_graph.embedding_model,
+            "langfuseEnabled": coach_graph.langfuse_enabled,
         }
 
     @app.get("/api/scenarios")
@@ -119,6 +120,8 @@ def create_app(
         reply_text = coach_graph.invoke_private_chat_reply(
             message=payload.message,
             private_context=retrieved_context,
+            member_id=resolved_member_id,
+            session_id=payload.trustedSessionId,
         )
         coach_msg = coach_graph.add_private_chat_message(
             member_id=resolved_member_id,
